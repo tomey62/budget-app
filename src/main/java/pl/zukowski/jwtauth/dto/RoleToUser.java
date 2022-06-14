@@ -1,4 +1,4 @@
-package pl.zukowski.jwtauth.entity;
+package pl.zukowski.jwtauth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
