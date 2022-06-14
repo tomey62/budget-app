@@ -10,13 +10,13 @@ import pl.zukowski.jwtauth.dto.UserDto;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 public class LoginController {
 
-    /*@PostMapping("/signin")
-    public ResponseEntity<?> authenticate(@Valid @RequestBody UserDto dto)
+    @PostMapping("/login")
+    public void authenticate(@Valid @RequestBody UserDto dto)
     {
-        return ResponseEntity.ok(new JwtResponse)
+
     }
-*/
+
 }

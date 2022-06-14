@@ -35,8 +35,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public User saveUser(UserDto newUser) {
-        User user = new User(null, newUser.getLogin(), bCryptPasswordEncoder.encode(newUser.getPassword()), new ArrayList<>());
+
+        User user = new User(null, newUser.getLogin(), bCryptPasswordEncoder.encode(newUser.getPassword()), newUser.getEmail(), new ArrayList<>());
+        user.getRoles().add(roleRepo.findByName("ROLE_USER"));
         return userRepo.save(user);
+
     }
 
     @Override
@@ -60,14 +63,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public List<UserDto> getUsers() {
         return userRepo.findAll().stream()
-                .map(user -> convertEntityToDto(user))
+                .map(this::convertEntityToDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public UserDto convertEntityToDto(User user) {
-        UserDto userDto = modelMapper.map(user, UserDto.class);
-        return userDto;
+        return modelMapper.map(user, UserDto.class);
     }
 
     @Override
@@ -78,9 +80,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             throw new UsernameNotFoundException("User not found");
         }
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        user.getRoles().forEach((role -> {
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
-        }));
+        user.getRoles().forEach((role -> authorities.add(new SimpleGrantedAuthority(role.getName()))));
         return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(), authorities);
     }
 }
