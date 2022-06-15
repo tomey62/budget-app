@@ -9,10 +9,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,7 +21,6 @@ import pl.zukowski.jwtauth.entity.User;
 import pl.zukowski.jwtauth.repository.RoleRepository;
 import pl.zukowski.jwtauth.repository.UserRepository;
 import pl.zukowski.jwtauth.service.UserService;
-
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
@@ -32,10 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.util.Arrays.stream;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Service
@@ -113,7 +108,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
-        if(authorizationHeader != null && authorizationHeader.startsWith("Bearer "))
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer "))
             try {
                 String refresh_token = authorizationHeader.substring("Bearer ".length());
                 Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
@@ -128,14 +123,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                         .withClaim("roles", user.getRoles().stream()
                                 .map(Role::getName).collect(Collectors.toList()))
                         .sign(algorithm);
-                Map<String,String> tokens = new HashMap<>();
+                Map<String, String> tokens = new HashMap<>();
                 tokens.put("access_token", access_token);
                 tokens.put("refresh_token", refresh_token);
                 response.setContentType(APPLICATION_JSON_VALUE);
                 new ObjectMapper().writeValue(response.getOutputStream(), tokens);
 
             } catch (Exception exception) {
-                response.sendError(CONFLICT.value());
+                response.sendError(FORBIDDEN.value());
                 response.setHeader("error", exception.getMessage());
             }
         else {
