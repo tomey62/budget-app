@@ -21,19 +21,22 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<UserDto>>getUsers()
-    {
+    public ResponseEntity<List<UserDto>> getUsers() {
         return ResponseEntity.ok().body(userService.getUsers());
     }
 
-    @PostMapping("/user/save")
-    public ResponseEntity<?> saveUser(@RequestBody UserDto user)
-    {
-        if(userService.getUser(user.getLogin())== null)
-         return ResponseEntity.ok().body(userService.saveUser(user));
+    @PostMapping("/user/register")
+    public ResponseEntity<?> saveUser(@RequestBody UserDto user) {
+        if (userService.getUser(user.getLogin()) == null)
+            return ResponseEntity.ok().body(userService.saveUser(user));
         else
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body("User already exist");
+    }
+
+    @PatchMapping("/user/resetPassword/{email}")
+    public ResponseEntity<?> resetPassword(@PathVariable String email) {
+        return ResponseEntity.ok().body(userService.resetPassword(email));
     }
   /*
     @PostMapping("/role/save")

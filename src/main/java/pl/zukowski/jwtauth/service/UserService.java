@@ -13,4 +13,5 @@ public interface UserService {
     User getUser(String login);
     List<UserDto> getUsers();
     UserDto convertEntityToDto(User user);
+    User resetPassword(String email);
 }

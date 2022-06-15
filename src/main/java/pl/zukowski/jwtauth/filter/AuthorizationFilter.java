@@ -4,7 +4,10 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,7 +21,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import static java.util.Arrays.stream;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 public class AuthorizationFilter extends OncePerRequestFilter {
@@ -46,7 +51,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                      filterChain.doFilter(request,response);
                  } catch (Exception exception) {
                      log.error("Error logging in: {}", exception.getMessage());
-                    response.sendError(FORBIDDEN.value());
+                    response.sendError(CONFLICT.value());
                     response.setHeader("error", exception.getMessage());
                  }
                 else {
