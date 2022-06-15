@@ -36,6 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManagerBean(), objectMapper);
         authenticationFilter.setFilterProcessesUrl("/api/login");
         http.csrf().disable();
+        http.cors();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests().antMatchers("/api/login", "/api/refresh").permitAll();
         http.authorizeRequests().antMatchers("/swagger-ui/index.html/**").permitAll();

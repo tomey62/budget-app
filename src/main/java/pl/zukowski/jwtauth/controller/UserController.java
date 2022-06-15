@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin("*")
 @SecurityRequirement(name = "bearerAuth")
 public class UserController {
     private final UserService userService;

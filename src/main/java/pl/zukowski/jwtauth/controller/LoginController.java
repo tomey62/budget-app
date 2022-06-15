@@ -14,6 +14,7 @@ import java.io.IOException;
 
 @RequiredArgsConstructor
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/api")
 public class LoginController {
     private final UserService userService;
