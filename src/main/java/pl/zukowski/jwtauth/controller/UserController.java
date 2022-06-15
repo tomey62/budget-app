@@ -11,7 +11,7 @@ import pl.zukowski.jwtauth.service.UserService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 @SecurityRequirement(name = "bearerAuth")
 public class UserController {
     private final UserService userService;
