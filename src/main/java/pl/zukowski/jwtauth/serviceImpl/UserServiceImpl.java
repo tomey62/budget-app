@@ -21,6 +21,7 @@ import pl.zukowski.jwtauth.entity.User;
 import pl.zukowski.jwtauth.repository.RoleRepository;
 import pl.zukowski.jwtauth.repository.UserRepository;
 import pl.zukowski.jwtauth.service.UserService;
+
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -106,6 +108,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public User changePassword(HttpServletRequest request, String password) {
+
+        User user = getUserFromJwt(request);
+        user.setPassword(bCryptPasswordEncoder.encode(password));
+        return userRepo.save(user);
+
+    }
+
+    @Override
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer "))
@@ -161,6 +172,25 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         mimeMessageHelper.setSubject(subject);
         mimeMessageHelper.setText(text, isHtmlContent);
         javaMailSender.send(mimeMessage);
+    }
+
+    public User getUserFromJwt(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader(AUTHORIZATION);
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer "))
+            try {
+                String refresh_token = authorizationHeader.substring("Bearer ".length());
+                Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+                JWTVerifier jwtVerifier = JWT.require(algorithm).build();
+                DecodedJWT decodedJWT = jwtVerifier.verify(refresh_token);
+                String username = decodedJWT.getSubject();
+                return userRepo.findByLogin(username);
+            } catch (Exception exception) {
+                throw new RuntimeException();
+            }
+        else {
+            throw new RuntimeException("Something goes wrong");
+        }
+
     }
 
 }

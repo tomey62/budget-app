@@ -17,5 +17,6 @@ public interface UserService {
     List<UserDto> getUsers();
     UserDto convertEntityToDto(User user);
     User resetPassword(String email);
+    User changePassword(HttpServletRequest request, String password);
     void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException;
 }
