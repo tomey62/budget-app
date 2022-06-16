@@ -2,12 +2,12 @@ package pl.zukowski.jwtauth.controller;
 
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.zukowski.jwtauth.dto.UserDto;
+import pl.zukowski.jwtauth.exception.ResourceExistException;
+import pl.zukowski.jwtauth.exception.ResourceNotFoundException;
 import pl.zukowski.jwtauth.service.UserService;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -28,12 +28,8 @@ public class UserController {
     }
 
     @PostMapping("/user/register")
-    public ResponseEntity<?> saveUser(@RequestBody UserDto user) {
-        if (userService.getUser(user.getLogin()) == null)
-            return ResponseEntity.ok().body(userService.saveUser(user));
-        else
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("User already exist");
+    public void saveUser(@RequestBody UserDto user) throws ResourceExistException {
+        userService.saveUser(user);
     }
 
     @PatchMapping("/user/password/reset/{email}")
@@ -41,9 +37,11 @@ public class UserController {
         return ResponseEntity.ok().body(userService.resetPassword(email));
     }
 
-    @PatchMapping("/user/password/change/{password}")
-    public ResponseEntity<?> changePassword(HttpServletRequest request, @PathVariable String password) {
-        return ResponseEntity.ok().body(userService.changePassword(request, password));
+    @PatchMapping("/user/password/change")
+    public void changePassword(HttpServletRequest request, @RequestParam String password) throws ResourceNotFoundException {
+
+            userService.changePassword(request, password);
+
     }
 
 }

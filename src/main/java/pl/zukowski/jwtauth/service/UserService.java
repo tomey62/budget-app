@@ -10,13 +10,11 @@ import java.io.IOException;
 import java.util.List;
 
 public interface UserService {
-    User saveUser(UserDto user);
-    Role saveRole(Role role);
-    void addRoleToUser(String login, String roleName);
+    void saveUser(UserDto user);
     User getUser(String login);
     List<UserDto> getUsers();
     UserDto convertEntityToDto(User user);
     User resetPassword(String email);
-    User changePassword(HttpServletRequest request, String password);
+    void changePassword(HttpServletRequest request, String password);
     void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException;
 }

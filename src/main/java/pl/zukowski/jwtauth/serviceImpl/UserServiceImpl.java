@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import pl.zukowski.jwtauth.dto.UserDto;
 import pl.zukowski.jwtauth.entity.Role;
 import pl.zukowski.jwtauth.entity.User;
+import pl.zukowski.jwtauth.exception.ResourceExistException;
 import pl.zukowski.jwtauth.repository.RoleRepository;
 import pl.zukowski.jwtauth.repository.UserRepository;
 import pl.zukowski.jwtauth.service.UserService;
@@ -53,24 +54,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User saveUser(UserDto newUser) {
-
-        User user = new User(null, newUser.getLogin(), bCryptPasswordEncoder.encode(newUser.getPassword()), newUser.getEmail(), new ArrayList<>());
-        user.getRoles().add(roleRepo.findByName("ROLE_USER"));
-        return userRepo.save(user);
-
-    }
-
-    @Override
-    public Role saveRole(Role role) {
-        return roleRepo.save(role);
-    }
-
-    @Override
-    public void addRoleToUser(String login, String roleName) {
-        User user = userRepo.findByLogin(login);
-        user.getRoles().add(roleRepo.findByName(roleName));
-        userRepo.save(user);
+    public void saveUser(UserDto newUser) {
+        if(userRepo.findByLogin(newUser.getLogin())==null) {
+            User user = new User(null, newUser.getLogin(), bCryptPasswordEncoder.encode(newUser.getPassword()), newUser.getEmail(), new ArrayList<>());
+            user.getRoles().add(roleRepo.findByName("ROLE_USER"));
+            userRepo.save(user);
+        }
+        else
+            throw new ResourceExistException("Taki użytkownik już istnieje luju jeden ty");
     }
 
 
@@ -108,11 +99,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User changePassword(HttpServletRequest request, String password) {
+    public void changePassword(HttpServletRequest request, String password) {
 
         User user = getUserFromJwt(request);
         user.setPassword(bCryptPasswordEncoder.encode(password));
-        return userRepo.save(user);
+        userRepo.save(user);
 
     }
 

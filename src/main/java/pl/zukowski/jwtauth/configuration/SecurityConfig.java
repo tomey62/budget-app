@@ -41,7 +41,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/api/login", "/api/refresh").permitAll();
         http.authorizeRequests().antMatchers("/swagger-ui/index.html/**").permitAll();
         http.authorizeRequests().antMatchers("/swagger-ui/**").permitAll();
-        http.authorizeRequests().antMatchers("/api/v1/users").authenticated();
+        http.authorizeRequests().antMatchers("/api/users").authenticated();
+        http.authorizeRequests().antMatchers("/api/user/password/change").authenticated();
         http.addFilter(authenticationFilter);
         http.addFilterBefore(new AuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
