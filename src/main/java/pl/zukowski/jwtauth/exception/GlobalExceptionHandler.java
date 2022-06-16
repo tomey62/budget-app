@@ -23,8 +23,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity(exceptionDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(ResourceExistException.class)
-    public ResponseEntity<?> globalException(ResourceExistException exception, WebRequest webRequest) {
+    @ExceptionHandler(ResourceConflictException.class)
+    public ResponseEntity<?> resourceConflictException(ResourceConflictException exception, WebRequest webRequest) {
         ExceptionDetails exceptionDetails = new ExceptionDetails(new Date(), exception.getMessage(), webRequest.getDescription(false));
         return new ResponseEntity(exceptionDetails, HttpStatus.CONFLICT);
     }

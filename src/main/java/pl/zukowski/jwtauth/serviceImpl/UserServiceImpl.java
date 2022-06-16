@@ -18,11 +18,11 @@ import org.springframework.stereotype.Service;
 import pl.zukowski.jwtauth.dto.UserDto;
 import pl.zukowski.jwtauth.entity.Role;
 import pl.zukowski.jwtauth.entity.User;
-import pl.zukowski.jwtauth.exception.ResourceExistException;
+import pl.zukowski.jwtauth.exception.ResourceConflictException;
+import pl.zukowski.jwtauth.exception.ResourceNotFoundException;
 import pl.zukowski.jwtauth.repository.RoleRepository;
 import pl.zukowski.jwtauth.repository.UserRepository;
 import pl.zukowski.jwtauth.service.UserService;
-
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
@@ -30,9 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -55,13 +53,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public void saveUser(UserDto newUser) {
-        if(userRepo.findByLogin(newUser.getLogin())==null) {
-            User user = new User(null, newUser.getLogin(), bCryptPasswordEncoder.encode(newUser.getPassword()), newUser.getEmail(), new ArrayList<>());
-            user.getRoles().add(roleRepo.findByName("ROLE_USER"));
-            userRepo.save(user);
+        User user = userRepo.findByLogin(newUser.getLogin());
+        if(userRepo.findByEmail(newUser.getEmail()) == null)
+        if(user==null) {
+            User createUser = new User(null, newUser.getLogin(), bCryptPasswordEncoder.encode(newUser.getPassword()), newUser.getEmail(), new ArrayList<>());
+            createUser.getRoles().add(roleRepo.findByName("ROLE_USER"));
+            userRepo.save(createUser);
         }
         else
-            throw new ResourceExistException("Taki użytkownik już istnieje luju jeden ty");
+            throw new ResourceConflictException("User already exist");
+        else
+            throw new ResourceConflictException("Email alredy exist");
     }
 
 
@@ -72,9 +74,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public List<UserDto> getUsers() {
-        return userRepo.findAll().stream()
+        List<UserDto> users = userRepo.findAll().stream()
                 .map(this::convertEntityToDto)
                 .collect(Collectors.toList());
+        if(users.size() == 0)
+            throw new ResourceNotFoundException("Baza jest pusta");
+        else
+            return users;
     }
 
     @Override
@@ -83,19 +89,23 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User resetPassword(String email) {
+    public void resetPassword(String email) {
         int length = 10;
         boolean useLetters = true;
         boolean useNumbers = false;
         String randomPassword = RandomStringUtils.random(length, useLetters, useNumbers);
         User user = userRepo.findByEmail(email);
-        user.setPassword(bCryptPasswordEncoder.encode(randomPassword));
-        try {
-            sendMail(email, "Your new password", "Your new password is: " + randomPassword, true);
-        } catch (MessagingException e) {
-            e.printStackTrace();
+        if(user == null)
+            throw new ResourceNotFoundException("Taki email nie istnieje");
+        else {
+            user.setPassword(bCryptPasswordEncoder.encode(randomPassword));
+            try {
+                sendMail(email, "Your new password", "Your new password is: " + randomPassword, true);
+            } catch (MessagingException e) {
+                throw new ResourceConflictException(e.getMessage());
+            }
+            userRepo.save(user);
         }
-        return userRepo.save(user);
     }
 
     @Override
@@ -176,10 +186,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 String username = decodedJWT.getSubject();
                 return userRepo.findByLogin(username);
             } catch (Exception exception) {
-                throw new RuntimeException();
+                throw new RuntimeException("o luju");
             }
         else {
-            throw new RuntimeException("Something goes wrong");
+            throw new RuntimeException("Token is missing");
         }
 
     }

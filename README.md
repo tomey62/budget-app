@@ -1,2 +1,2 @@
-# Simple jwt authentication
+# Tu będzie niesamowita apka xD
 

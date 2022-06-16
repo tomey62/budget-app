@@ -1,9 +1,7 @@
 package pl.zukowski.jwtauth.service;
 
 import pl.zukowski.jwtauth.dto.UserDto;
-import pl.zukowski.jwtauth.entity.Role;
 import pl.zukowski.jwtauth.entity.User;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -14,7 +12,7 @@ public interface UserService {
     User getUser(String login);
     List<UserDto> getUsers();
     UserDto convertEntityToDto(User user);
-    User resetPassword(String email);
+    void resetPassword(String email);
     void changePassword(HttpServletRequest request, String password);
     void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException;
 }
