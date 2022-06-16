@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.zukowski.jwtauth.dto.UserDto;
 import pl.zukowski.jwtauth.service.UserService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -35,22 +36,14 @@ public class UserController {
                     .body("User already exist");
     }
 
-    @PatchMapping("/user/resetPassword/{email}")
+    @PatchMapping("/user/password/reset/{email}")
     public ResponseEntity<?> resetPassword(@PathVariable String email) {
         return ResponseEntity.ok().body(userService.resetPassword(email));
     }
-  /*
-    @PostMapping("/role/save")
-    public ResponseEntity<Role> saveRole(@RequestBody Role role)
-    {
-        return ResponseEntity.ok().body(userService.saveRole(role));
+
+    @PatchMapping("/user/password/change/{password}")
+    public ResponseEntity<?> changePassword(HttpServletRequest request, @PathVariable String password) {
+        return ResponseEntity.ok().body(userService.changePassword(request, password));
     }
 
-    @PostMapping("/role/add")
-    public ResponseEntity<?> addRoleToUser(@RequestBody RoleToUser form)
-    {
-        userService.addRoleToUser(form.getLogin(), form.getRole());
-        return ResponseEntity.ok().build();
-    }
-   */
 }
