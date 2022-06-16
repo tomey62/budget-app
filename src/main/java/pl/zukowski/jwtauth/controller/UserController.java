@@ -5,8 +5,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.zukowski.jwtauth.dto.UserDto;
-import pl.zukowski.jwtauth.exception.ResourceConflictException;
-import pl.zukowski.jwtauth.exception.ResourceNotFoundException;
 import pl.zukowski.jwtauth.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,22 +22,22 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<UserDto>> getUsers() throws ResourceNotFoundException{
+    public ResponseEntity<List<UserDto>> getUsers(){
         return ResponseEntity.ok().body(userService.getUsers());
     }
 
     @PostMapping("/user/register")
-    public void saveUser(@RequestBody UserDto user) throws ResourceConflictException {
+    public void saveUser(@RequestBody UserDto user) {
         userService.saveUser(user);
     }
 
     @PatchMapping("/user/password/reset/{email}")
-    public void resetPassword(@PathVariable String email) throws ResourceNotFoundException {
+    public void resetPassword(@PathVariable String email) {
         userService.resetPassword(email);
     }
 
     @PatchMapping("/user/password/change")
-    public void changePassword(HttpServletRequest request, @RequestParam String password) throws ResourceNotFoundException {
+    public void changePassword(HttpServletRequest request, @RequestParam String password){
         userService.changePassword(request, password);
     }
 

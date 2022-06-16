@@ -15,4 +15,5 @@ public interface UserService {
     void resetPassword(String email);
     void changePassword(HttpServletRequest request, String password);
     void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException;
+    User getUserFromJwt(HttpServletRequest request);
 }

@@ -28,4 +28,10 @@ public class GlobalExceptionHandler {
         ExceptionDetails exceptionDetails = new ExceptionDetails(new Date(), exception.getMessage(), webRequest.getDescription(false));
         return new ResponseEntity(exceptionDetails, HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(NotAllowedException.class)
+    public ResponseEntity<?> notAllowedException(NotAllowedException exception, WebRequest webRequest) {
+        ExceptionDetails exceptionDetails = new ExceptionDetails(new Date(), exception.getMessage(), webRequest.getDescription(false));
+        return new ResponseEntity(exceptionDetails, HttpStatus.FORBIDDEN);
+    }
 }
