@@ -26,19 +26,19 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public void saveCard(CardDto cardDto, HttpServletRequest request) {
-
-        if (cardRepo.findByCardNumber(cardDto.getCardNumber()) == null) {
-            User user = userService.getUserFromJwt(request);
-            Card card = new Card(cardDto.getCardNumber(), cardDto.getName(), cardDto.getType(), cardDto.getBalance(), user);
+        User user = userService.getUserFromJwt(request);
+        if (cardRepo.findByUserAndCardNumber(user, cardDto.getCardNumber()) == null) {
+            Card card = new Card(null,cardDto.getCardNumber(), cardDto.getName(), cardDto.getType(), cardDto.getBalance(), user);
             cardRepo.save(card);
         } else
             throw new ResourceConflictException("Taka karta już istnieje");
     }
 
     @Override
-    public void deleteCard(Long cardNumber) {
-        if (cardRepo.findByCardNumber(cardNumber) != null)
-            cardRepo.deleteById(cardNumber);
+    public void deleteCard(Long cardNumber, HttpServletRequest request) {
+        Card card = cardRepo.findByUserAndCardNumber(userService.getUserFromJwt(request),cardNumber);
+        if (card != null)
+            cardRepo.deleteById(card.getCardId());
         else
             throw new ResourceNotFoundException("Nie znaleziono takiej karty");
     }

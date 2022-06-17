@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface CardService {
    void saveCard(CardDto cardDto, HttpServletRequest request);
-   void deleteCard(Long cardNumber);
+   void deleteCard(Long cardNumber,HttpServletRequest request);
    List<CardDto>getUserCards(HttpServletRequest request);
 }

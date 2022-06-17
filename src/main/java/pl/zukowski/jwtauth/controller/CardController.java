@@ -27,9 +27,9 @@ public class CardController {
     }
 
     @DeleteMapping("/card/delete/{cardNumber}")
-    public void deleteCard(@PathVariable Long cardNumber)
+    public void deleteCard(@PathVariable Long cardNumber, HttpServletRequest request)
     {
-        cardService.deleteCard(cardNumber);
+        cardService.deleteCard(cardNumber, request);
     }
 
     @GetMapping("/card/get")
