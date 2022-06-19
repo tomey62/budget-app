@@ -11,4 +11,6 @@ public interface CardService {
    void saveCard(CardDto cardDto, HttpServletRequest request);
    void deleteCard(Long cardNumber,HttpServletRequest request);
    List<CardDto>getUserCards(HttpServletRequest request);
+   Card getCard(Long cardNumber,HttpServletRequest request);
+   void updateBalance(Long cardNumber,Long balance, HttpServletRequest request);
 }

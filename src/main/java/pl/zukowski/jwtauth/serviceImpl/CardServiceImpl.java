@@ -13,6 +13,7 @@ import pl.zukowski.jwtauth.service.CardService;
 import pl.zukowski.jwtauth.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,7 @@ public class CardServiceImpl implements CardService {
     public void saveCard(CardDto cardDto, HttpServletRequest request) {
         User user = userService.getUserFromJwt(request);
         if (cardRepo.findByUserAndCardNumber(user, cardDto.getCardNumber()) == null) {
-            Card card = new Card(null,cardDto.getCardNumber(), cardDto.getName(), cardDto.getType(), cardDto.getBalance(), user);
+            Card card = new Card(null,cardDto.getCardNumber(), cardDto.getName(), cardDto.getType(), cardDto.getBalance(), user, new ArrayList<>());
             cardRepo.save(card);
         } else
             throw new ResourceConflictException("Taka karta już istnieje");
@@ -53,6 +54,25 @@ public class CardServiceImpl implements CardService {
             throw new ResourceNotFoundException("Nie znaleziono kart");
         else
             return cardDto;
+    }
+
+    @Override
+    public Card getCard(Long cardNumber, HttpServletRequest request) {
+        User user = userService.getUserFromJwt(request);
+        Card card = cardRepo.findByUserAndCardNumber(user,cardNumber);
+        if(card == null)
+            throw new ResourceNotFoundException("Nie znaleziono karty");
+        else
+        return card;
+    }
+
+    @Override
+    public void updateBalance(Long cardNumber,Long balance, HttpServletRequest request) {
+        User user = userService.getUserFromJwt(request);
+        Card card = cardRepo.findByUserAndCardNumber(user,cardNumber);
+        balance = balance + card.getBalance();
+        card.setBalance(balance);
+        cardRepo.save(card);
     }
 
     public CardDto convertEntityToDto(Card card) {
