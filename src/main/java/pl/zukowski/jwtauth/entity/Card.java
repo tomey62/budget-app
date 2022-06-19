@@ -25,6 +25,6 @@ public class Card {
     @ManyToOne
     @JoinColumn(name="user_id", nullable=false)
     private User user;
-    @OneToMany(mappedBy="card")
+    @OneToMany(mappedBy="card", cascade = CascadeType.REMOVE)
     private Collection<Transaction> transactions = new ArrayList<>();
 }

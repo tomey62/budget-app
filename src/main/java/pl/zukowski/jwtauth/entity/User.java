@@ -19,6 +19,6 @@ public class User {
     private String email;
     @ManyToMany(fetch = EAGER)
     private Collection<Role> roles = new ArrayList<>();
-    @OneToMany(mappedBy="user")
+    @OneToMany(mappedBy="user", cascade = CascadeType.REMOVE)
     private Collection<Card> cards = new ArrayList<>();
 }

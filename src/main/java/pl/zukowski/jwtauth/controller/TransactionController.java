@@ -20,13 +20,24 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @PostMapping("/transaction/save/{cardNumber}")
-    public void saveTransaction(@RequestBody TransactionDto dto, @PathVariable Long cardNumber, HttpServletRequest request)
-    {
-        transactionService.save(dto,cardNumber,request);
+    public void saveTransaction(@RequestBody TransactionDto dto, @PathVariable Long cardNumber, HttpServletRequest request) {
+        transactionService.save(dto, cardNumber, request);
     }
+
     @GetMapping("/transaction/get/{cardNumber}")
-    public ResponseEntity<List<TransactionGetDto>> getTransaction(@PathVariable Long cardNumber, HttpServletRequest request)
-    {
-        return ResponseEntity.ok().body(transactionService.getTransaction(cardNumber,request));
+    public ResponseEntity<List<TransactionGetDto>> getTransaction(@PathVariable Long cardNumber, HttpServletRequest request) {
+        return ResponseEntity.ok().body(transactionService.getTransaction(cardNumber, request));
+    }
+
+    @DeleteMapping("/transaction/delete/{transactionId}")
+    public void deleteTransaction(@PathVariable Long transactionId) {
+        transactionService.deleteTransaction(transactionId);
+    }
+
+    @GetMapping("/transaction/getBetween")
+    public ResponseEntity<List<TransactionGetDto>> getTransactionBetween(@RequestParam String start, @RequestParam String end
+            , @RequestParam Long cardNumber, HttpServletRequest request) {
+        return ResponseEntity.ok()
+                .body(transactionService.getTransactionBetween(start, end, cardNumber, request));
     }
 }

@@ -1,11 +1,9 @@
 package pl.zukowski.jwtauth.serviceImpl;
 
 import lombok.RequiredArgsConstructor;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import pl.zukowski.jwtauth.dto.TransactionDto;
@@ -13,10 +11,10 @@ import pl.zukowski.jwtauth.dto.TransactionGetDto;
 import pl.zukowski.jwtauth.entity.Card;
 import pl.zukowski.jwtauth.entity.Transaction;
 import pl.zukowski.jwtauth.exception.ResourceConflictException;
+import pl.zukowski.jwtauth.exception.ResourceNotFoundException;
 import pl.zukowski.jwtauth.repository.TransactionRepository;
 import pl.zukowski.jwtauth.service.CardService;
 import pl.zukowski.jwtauth.service.TransactionService;
-
 import javax.servlet.http.HttpServletRequest;
 
 
@@ -30,26 +28,41 @@ public class TransactionServiceImpl implements TransactionService {
 
 
     @Override
-    public void save(TransactionDto transactionDto, Long number,HttpServletRequest request) {
+    public void save(TransactionDto transactionDto, Long number, HttpServletRequest request) {
         Transaction transaction = new Transaction(null, transactionDto.getPrice(), transactionDto.getCategory()
-                , transactionDto.getType(), myDate.toString(), cardService.getCard(number,request));
+                , transactionDto.getType(), myDate.toString(), cardService.getCard(number, request));
 
         if (transactionDto.getType().equals("incoming")) {
             cardService.updateBalance(number, transactionDto.getPrice(), request);
             transactionRepo.save(transaction);
-        }
-        else if(transactionDto.getType().equals("outgoing")) {
+        } else if (transactionDto.getType().equals("outgoing")) {
             cardService.updateBalance(number, (-transaction.getPrice()), request);
             transactionRepo.save(transaction);
-        }
-        else
+        } else
             throw new ResourceConflictException("Something goes wrong");
     }
 
     @Override
     public List<TransactionGetDto> getTransaction(Long cardNumber, HttpServletRequest request) {
-        Card card = cardService.getCard(cardNumber,request);
+        Card card = cardService.getCard(cardNumber, request);
         return transactionRepo.findByCard(card).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteTransaction(Long transactionId) {
+        try {
+            transactionRepo.deleteById(transactionId);
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("Transakcja nie istnieje");
+        }
+    }
+
+    @Override
+    public List<TransactionGetDto> getTransactionBetween(String start, String end, Long cardNumber, HttpServletRequest request) {
+        Card card = cardService.getCard(cardNumber, request);
+        return transactionRepo.findByDateCreatedBetweenAndCard(start, end, card).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
