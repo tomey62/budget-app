@@ -1,9 +1,11 @@
 package pl.zukowski.jwtauth.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class TransactionGetDto {
     private Long price;
     private String category;

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.zukowski.jwtauth.dto.TransactionDto;
 import pl.zukowski.jwtauth.dto.TransactionGetDto;
+import pl.zukowski.jwtauth.entity.Transaction;
 import pl.zukowski.jwtauth.service.TransactionService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,8 +21,8 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @PostMapping("/transaction/save/{cardNumber}")
-    public void saveTransaction(@RequestBody TransactionDto dto, @PathVariable Long cardNumber, HttpServletRequest request) {
-        transactionService.save(dto, cardNumber, request);
+    public ResponseEntity<TransactionGetDto> saveTransaction(@RequestBody TransactionDto dto, @PathVariable Long cardNumber, HttpServletRequest request) {
+       return ResponseEntity.ok().body(transactionService.save(dto, cardNumber, request));
     }
 
     @GetMapping("/transaction/get/{cardNumber}")
