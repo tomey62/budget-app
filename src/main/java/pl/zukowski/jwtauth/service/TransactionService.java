@@ -1,16 +1,17 @@
 package pl.zukowski.jwtauth.service;
 
+import org.springframework.data.domain.Sort;
+import pl.zukowski.jwtauth.dto.SaveTransactionDto;
 import pl.zukowski.jwtauth.dto.TransactionDto;
-import pl.zukowski.jwtauth.dto.TransactionGetDto;
 import pl.zukowski.jwtauth.entity.Transaction;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface TransactionService {
-    TransactionGetDto save (TransactionDto transactionDto, Long number, HttpServletRequest request);
-    List<TransactionGetDto> getTransaction(Long cardNumber,HttpServletRequest request);
-    TransactionGetDto convertToGetDto(Transaction transaction);
-    void deleteTransaction(Long transactionId);
-    List<TransactionGetDto> getTransactionBetween(String start, String end, Long cardNumber, HttpServletRequest request);
+    TransactionDto save (SaveTransactionDto transactionDto, Long number, HttpServletRequest request);
+    List<TransactionDto> getTransaction(Long cardNumber, HttpServletRequest request, int page);
+    TransactionDto convertToGetDto(Transaction transaction);
+    void deleteTransaction(Long transactionId, HttpServletRequest request);
+    List<TransactionDto> getTransactionBetween(String start, String end, Long cardNumber, HttpServletRequest request, int page);
 }

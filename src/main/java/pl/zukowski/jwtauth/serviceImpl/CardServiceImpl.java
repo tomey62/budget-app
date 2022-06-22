@@ -9,11 +9,8 @@ import pl.zukowski.jwtauth.entity.User;
 import pl.zukowski.jwtauth.exception.ResourceConflictException;
 import pl.zukowski.jwtauth.exception.ResourceNotFoundException;
 import pl.zukowski.jwtauth.repository.CardRepository;
-import pl.zukowski.jwtauth.repository.TransactionRepository;
 import pl.zukowski.jwtauth.service.CardService;
-import pl.zukowski.jwtauth.service.TransactionService;
 import pl.zukowski.jwtauth.service.UserService;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
