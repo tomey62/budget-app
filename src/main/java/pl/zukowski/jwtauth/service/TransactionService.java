@@ -2,6 +2,7 @@ package pl.zukowski.jwtauth.service;
 
 import org.springframework.data.domain.Sort;
 import pl.zukowski.jwtauth.dto.SaveTransactionDto;
+import pl.zukowski.jwtauth.dto.SumDto;
 import pl.zukowski.jwtauth.dto.TransactionDto;
 import pl.zukowski.jwtauth.entity.Transaction;
 
@@ -14,4 +15,5 @@ public interface TransactionService {
     TransactionDto convertToGetDto(Transaction transaction);
     void deleteTransaction(Long transactionId, HttpServletRequest request);
     List<TransactionDto> getTransactionBetween(String start, String end, Long cardNumber, HttpServletRequest request, int page);
+    List<SumDto> getSumByMonthAndCategory(String date,Long cardNumber, HttpServletRequest request);
 }

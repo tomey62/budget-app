@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.zukowski.jwtauth.dto.SaveTransactionDto;
+import pl.zukowski.jwtauth.dto.SumDto;
 import pl.zukowski.jwtauth.dto.TransactionDto;
+import pl.zukowski.jwtauth.entity.Transaction;
 import pl.zukowski.jwtauth.service.TransactionService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,5 +42,12 @@ public class TransactionController {
             , @RequestParam Long cardNumber, HttpServletRequest request, int page) {
         return ResponseEntity.ok()
                 .body(transactionService.getTransactionBetween(start, end, cardNumber, request, page));
+    }
+
+    @GetMapping("/transaction/getSum/{cardNumber}")
+    public ResponseEntity<List<SumDto>> getTransactionSumByCategory(@RequestParam String date, @PathVariable Long cardNumber, HttpServletRequest request)
+    {
+        return ResponseEntity.ok()
+                .body(transactionService.getSumByMonthAndCategory(date,cardNumber,request));
     }
 }

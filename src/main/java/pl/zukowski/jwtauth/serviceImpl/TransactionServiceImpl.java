@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.zukowski.jwtauth.dto.SaveTransactionDto;
+import pl.zukowski.jwtauth.dto.SumDto;
 import pl.zukowski.jwtauth.dto.TransactionDto;
 import pl.zukowski.jwtauth.entity.Card;
 import pl.zukowski.jwtauth.entity.Transaction;
@@ -35,16 +35,17 @@ public class TransactionServiceImpl implements TransactionService {
     public TransactionDto save(SaveTransactionDto transactionDto, Long number, HttpServletRequest request) {
         Transaction transaction = new Transaction(null, transactionDto.getPrice(), transactionDto.getCategory()
                 , transactionDto.getType(), myDate.toString(), cardService.getCard(number, request));
-        TransactionDto getDto = new TransactionDto(transaction.getTransactionId(), transactionDto.getPrice(), transactionDto.getCategory()
-                , transactionDto.getType(), myDate.toString());
+
         if (transactionDto.getType().equals("incoming")) {
             cardService.updateBalance(number, transactionDto.getPrice(), request);
             transactionRepo.save(transaction);
-            return getDto;
+            return new TransactionDto(transaction.getTransactionId(), transactionDto.getPrice(), transactionDto.getCategory()
+                    , transactionDto.getType(), myDate.toString());
         } else if (transactionDto.getType().equals("outgoing")) {
             cardService.updateBalance(number, (-transaction.getPrice()), request);
             transactionRepo.save(transaction);
-            return getDto;
+            return new TransactionDto(transaction.getTransactionId(), transactionDto.getPrice(), transactionDto.getCategory()
+                    , transactionDto.getType(), myDate.toString());
         } else
             throw new ResourceConflictException("Something goes wrong");
 
@@ -79,6 +80,12 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionRepo.findByDateCreatedBetweenAndCard(PageRequest.of(page,pageSize),start, end, card).stream()
                 .map(this::convertToGetDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SumDto> getSumByMonthAndCategory(String date, Long cardNumber,HttpServletRequest request) {
+        Card card= cardService.getCard(cardNumber, request);
+        return transactionRepo.sumByDate(date,card);
     }
 
     @Override
