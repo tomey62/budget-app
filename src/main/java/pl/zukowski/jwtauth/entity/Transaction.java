@@ -8,17 +8,16 @@ import pl.zukowski.jwtauth.dto.SumDto;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
 
-@NamedNativeQuery(name= "Transaction.sumByDate",
+@NamedNativeQuery(name = "Transaction.sumByDate",
         query = "SELECT SUM(t.price) as sumTransaction, t.category from Transaction t where t.type = 'outgoing' " +
                 "and MONTH(t.date_created)=?1 and t.card_id = ?2 group by t.category",
         resultSetMapping = "Mapping.SumDto")
 
 @SqlResultSetMapping(name = "Mapping.SumDto",
-                        classes = @ConstructorResult(targetClass = SumDto.class,
-                        columns = {@ColumnResult(name = "sumTransaction", type = Long.class),
-                                @ColumnResult(name = "category")}))
+        classes = @ConstructorResult(targetClass = SumDto.class,
+                columns = {@ColumnResult(name = "sumTransaction", type = Long.class),
+                        @ColumnResult(name = "category")}))
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -36,7 +35,7 @@ public class Transaction {
     @Column(name = "date_created")
     private String dateCreated;
     @ManyToOne
-    @JoinColumn(name="card_id", nullable=false)
+    @JoinColumn(name = "card_id", nullable = false)
     private Card card;
 
 }

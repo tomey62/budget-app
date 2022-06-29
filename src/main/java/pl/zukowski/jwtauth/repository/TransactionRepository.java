@@ -7,13 +7,16 @@ import org.springframework.stereotype.Repository;
 import pl.zukowski.jwtauth.dto.SumDto;
 import pl.zukowski.jwtauth.entity.Card;
 import pl.zukowski.jwtauth.entity.Transaction;
+
 import java.util.List;
 
 
 @Repository
-public interface TransactionRepository extends JpaRepository<Transaction,Long> {
+public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     List<Transaction> findByCard(Pageable page, Card card);
-    List<Transaction> findByDateCreatedBetweenAndCard(Pageable page ,String start, String end, Card card);
+
+    List<Transaction> findByDateCreatedBetweenAndCard(Pageable page, String start, String end, Card card);
+
     @Query(nativeQuery = true)
-    List<SumDto> sumByDate (String date, Card card);
+    List<SumDto> sumByDate(String date, Card card);
 }
