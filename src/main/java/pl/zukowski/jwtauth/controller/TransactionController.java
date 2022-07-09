@@ -7,9 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.zukowski.jwtauth.dto.SaveTransactionDto;
 import pl.zukowski.jwtauth.dto.SumDto;
 import pl.zukowski.jwtauth.dto.TransactionDto;
-import pl.zukowski.jwtauth.entity.Transaction;
 import pl.zukowski.jwtauth.service.TransactionService;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -21,30 +19,30 @@ import java.util.List;
 public class TransactionController {
     private final TransactionService transactionService;
 
-    @PostMapping("/transaction/save/{cardNumber}")
+    @PostMapping("/transaction/{cardNumber}")
     public ResponseEntity<TransactionDto> saveTransaction(@RequestBody SaveTransactionDto dto, @PathVariable Long cardNumber, HttpServletRequest request) {
        return ResponseEntity.ok().body(transactionService.save(dto, cardNumber, request));
     }
 
-    @GetMapping("/transaction/get/{cardNumber}")
+    @GetMapping("/transaction/{cardNumber}")
     public ResponseEntity<List<TransactionDto>> getTransaction(@PathVariable Long cardNumber,
                                                                HttpServletRequest request, @RequestParam int page) {
         return ResponseEntity.ok().body(transactionService.getTransaction(cardNumber, request,page));
     }
 
-    @DeleteMapping("/transaction/delete/{transactionId}")
+    @DeleteMapping("/transaction/{transactionId}")
     public void deleteTransaction(@PathVariable Long transactionId, HttpServletRequest request) {
         transactionService.deleteTransaction(transactionId, request);
     }
 
-    @GetMapping("/transaction/getBetween")
+    @GetMapping("/transaction/between-day")
     public ResponseEntity<List<TransactionDto>> getTransactionBetween(@RequestParam String start, @RequestParam String end
             , @RequestParam Long cardNumber, HttpServletRequest request, int page) {
         return ResponseEntity.ok()
                 .body(transactionService.getTransactionBetween(start, end, cardNumber, request, page));
     }
 
-    @GetMapping("/transaction/getSum/{cardNumber}")
+    @GetMapping("/transaction/month-sum-by-category/{cardNumber}")
     public ResponseEntity<List<SumDto>> getTransactionSumByCategory(@RequestParam String date, @PathVariable Long cardNumber, HttpServletRequest request)
     {
         return ResponseEntity.ok()

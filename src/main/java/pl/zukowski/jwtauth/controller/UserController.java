@@ -31,12 +31,12 @@ public class UserController {
         userService.saveUser(user);
     }
 
-    @PatchMapping("/user/password/reset/{email}")
+    @PatchMapping("/user/reset-password/{email}")
     public void resetPassword(@PathVariable String email) {
         userService.resetPassword(email);
     }
 
-    @PatchMapping("/user/password/change")
+    @PatchMapping("/user/change-password")
     public void changePassword(HttpServletRequest request, @RequestParam String password){
         userService.changePassword(request, password);
     }

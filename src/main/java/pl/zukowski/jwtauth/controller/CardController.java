@@ -20,19 +20,19 @@ public class CardController {
         this.cardService = cardService;
     }
 
-    @PostMapping("/card/save")
+    @PostMapping("/card")
     public void saveCard(@RequestBody CardDto cardDto, HttpServletRequest request)
     {
         cardService.saveCard(cardDto,request);
     }
 
-    @DeleteMapping("/card/delete/{cardNumber}")
+    @DeleteMapping("/card/{cardNumber}")
     public void deleteCard(@PathVariable Long cardNumber, HttpServletRequest request)
     {
         cardService.deleteCard(cardNumber, request);
     }
 
-    @GetMapping("/card/get")
+    @GetMapping("/card")
     public ResponseEntity<List<CardDto>> getCard(HttpServletRequest request)
     {
         return ResponseEntity.ok().body(cardService.getUserCards(request));
