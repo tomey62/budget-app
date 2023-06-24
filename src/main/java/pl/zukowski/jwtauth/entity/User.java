@@ -19,4 +19,12 @@ public class User {
     private String email;
     @ManyToMany(fetch = EAGER)
     private Collection<Role> roles = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+            name = "Favourite",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "location_id"))
+    private Collection<Location> locations = new ArrayList<>();
+
+
 }
