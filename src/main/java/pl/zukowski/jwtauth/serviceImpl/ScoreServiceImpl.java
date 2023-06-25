@@ -16,7 +16,9 @@ public class ScoreServiceImpl {
     public Score addScore(float score,Long id)
     {
         Location location = locationRepository.getById(id);
-        Score score1 = new Score(null, score,location);
+        Score score1 = new Score();
+        score1.setLocation(location);
+        score1.setRating(score);
         return scoreRepository.save(score1);
     }
 }

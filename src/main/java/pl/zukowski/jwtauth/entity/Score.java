@@ -1,5 +1,6 @@
 package pl.zukowski.jwtauth.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,5 +19,6 @@ public class Score {
 
     @ManyToOne
     @JoinColumn(name="location_id")
+    @JsonIgnore
     private Location location;
 }
