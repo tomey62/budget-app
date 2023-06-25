@@ -13,8 +13,8 @@ public class ScoreController {
     private final ScoreServiceImpl scoreService;
 
     @PostMapping("/score")
-    public ResponseEntity<?> addScore(@RequestParam float score, @RequestParam Long id) {
-        return ResponseEntity.ok().body(scoreService.addScore(score,id));
+    public Score addScore(@RequestParam float score, @RequestParam Long id) {
+        return scoreService.addScore(score,id);
 
     }
 }
