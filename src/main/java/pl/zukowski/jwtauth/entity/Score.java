@@ -17,6 +17,6 @@ public class Score {
     private float rating;
 
     @ManyToOne
-    @JoinColumn(name="location_id", nullable=false)
+    @JoinColumn(name="location_id")
     private Location location;
 }
