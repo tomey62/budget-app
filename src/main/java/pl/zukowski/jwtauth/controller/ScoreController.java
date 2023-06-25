@@ -12,7 +12,7 @@ import pl.zukowski.jwtauth.serviceImpl.ScoreServiceImpl;
 public class ScoreController {
     private final ScoreServiceImpl scoreService;
 
-    @PostMapping("/score")
+    @PostMapping("/score/{score}/{id}")
     public ResponseEntity<?> addScore(@PathVariable float score, @PathVariable Long id) {
         return ResponseEntity.ok().body(addScore(score,id));
 
