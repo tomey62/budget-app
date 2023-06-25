@@ -1,5 +1,6 @@
 package pl.zukowski.jwtauth.service;
 
+import pl.zukowski.jwtauth.dto.LocationWithAverageRating;
 import pl.zukowski.jwtauth.dto.UserDto;
 import pl.zukowski.jwtauth.entity.Role;
 import pl.zukowski.jwtauth.entity.User;
@@ -18,4 +19,9 @@ public interface UserService {
     UserDto convertEntityToDto(User user);
     User resetPassword(String email);
     void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException;
+    void addLocationToFavorites(HttpServletRequest request, Long locationId) throws Exception;
+
+    User getUserFromJwt(HttpServletRequest request) throws Exception;
+
+    List<LocationWithAverageRating> getFavoriteLocations(HttpServletRequest request) throws Exception;
 }

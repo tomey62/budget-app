@@ -23,18 +23,5 @@ public class ScoreServiceImpl {
         score1.setRating(score);
         return scoreRepository.save(score1);
     }
-    public float getAverageRatingForLocation(Long locationId) {
-        float averageRating = 0.0f;
-        List<Score> scores = scoreRepository.findByLocationId(locationId);
 
-        if (!scores.isEmpty()) {
-            float sum = 0.0f;
-            for (Score score : scores) {
-                sum += score.getRating();
-            }
-            averageRating = sum / scores.size();
-        }
-
-        return averageRating;
-    }
 }

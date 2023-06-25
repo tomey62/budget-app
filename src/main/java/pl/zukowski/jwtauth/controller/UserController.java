@@ -5,9 +5,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.zukowski.jwtauth.dto.LocationWithAverageRating;
 import pl.zukowski.jwtauth.dto.UserDto;
 import pl.zukowski.jwtauth.service.UserService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -37,6 +39,20 @@ public class UserController {
     @PatchMapping("/user/resetPassword/{email}")
     public ResponseEntity<?> resetPassword(@PathVariable String email) {
         return ResponseEntity.ok().body(userService.resetPassword(email));
+    }
+    @PostMapping("/favorite")
+    public ResponseEntity<String> addLocationToFavorites(
+            HttpServletRequest request,
+            @RequestParam Long locationId) throws Exception {
+        userService.addLocationToFavorites(request, locationId);
+        return ResponseEntity.ok("Location added to favorites.");
+    }
+
+    @GetMapping("/favorites")
+    public ResponseEntity<List<LocationWithAverageRating>> getFavoriteLocationsWithAverageRating(
+            HttpServletRequest request) throws Exception {
+        List<LocationWithAverageRating> favoriteLocationsWithAvgRating = userService.getFavoriteLocations(request);
+        return ResponseEntity.ok(favoriteLocationsWithAvgRating);
     }
   /*
     @PostMapping("/role/save")

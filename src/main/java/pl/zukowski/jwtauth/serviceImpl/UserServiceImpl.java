@@ -9,19 +9,20 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import pl.zukowski.jwtauth.dto.LocationWithAverageRating;
 import pl.zukowski.jwtauth.dto.UserDto;
+import pl.zukowski.jwtauth.entity.Location;
 import pl.zukowski.jwtauth.entity.Role;
 import pl.zukowski.jwtauth.entity.User;
+import pl.zukowski.jwtauth.repository.LocationRepository;
 import pl.zukowski.jwtauth.repository.RoleRepository;
+import pl.zukowski.jwtauth.repository.ScoreRepository;
 import pl.zukowski.jwtauth.repository.UserRepository;
 import pl.zukowski.jwtauth.service.UserService;
 
@@ -45,14 +46,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JavaMailSender javaMailSender;
+    private final LocationRepository locationRepository;
+    private final ScoreRepository scoreRepository;
 
 
-    public UserServiceImpl(UserRepository userRepo, RoleRepository roleRepo, ModelMapper modelMapper, BCryptPasswordEncoder bCryptPasswordEncoder, JavaMailSender javaMailSender) {
+    public UserServiceImpl(UserRepository userRepo, RoleRepository roleRepo, ModelMapper modelMapper,
+                           BCryptPasswordEncoder bCryptPasswordEncoder, JavaMailSender javaMailSender
+                            ,LocationRepository locationRepository, ScoreRepository scoreRepository) {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
         this.modelMapper = modelMapper;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.javaMailSender = javaMailSender;
+        this.locationRepository = locationRepository;
+        this.scoreRepository = scoreRepository;
     }
 
     @Override
@@ -166,6 +173,59 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         mimeMessageHelper.setSubject(subject);
         mimeMessageHelper.setText(text, isHtmlContent);
         javaMailSender.send(mimeMessage);
+    }
+    @Override
+    public void addLocationToFavorites(HttpServletRequest request, Long locationId) throws Exception {
+        User user = getUserFromJwt(request);
+        Location location = locationRepository.getById(locationId);
+        if (user.getLocations().contains(location)) {
+            throw new IllegalArgumentException("Location already added to favorites.");
+        }
+        user.getLocations().add(location);
+        userRepo.save(user);
+    }
+
+    @Override
+    public User getUserFromJwt(HttpServletRequest request) throws Exception {
+        String authorizationHeader = request.getHeader(AUTHORIZATION);
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer "))
+            try {
+                String refresh_token = authorizationHeader.substring("Bearer ".length());
+                Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+                JWTVerifier jwtVerifier = JWT.require(algorithm).build();
+                DecodedJWT decodedJWT = jwtVerifier.verify(refresh_token);
+                String username = decodedJWT.getSubject();
+                return userRepo.findByLogin(username);
+            } catch (Exception exception) {
+                throw new RuntimeException("Token error");
+            }
+        else {
+            throw new Exception("Token is missing");
+        }
+
+    }
+    @Override
+    public List<LocationWithAverageRating> getFavoriteLocations(HttpServletRequest request) throws Exception {
+        User user = getUserFromJwt(request);
+        Collection<Location> favoriteLocations = user.getLocations();
+
+        List<LocationWithAverageRating> locationsWithAvgRating = new ArrayList<>();
+
+        for (Location location : favoriteLocations) {
+            Double avgRating = scoreRepository.getAverageRatingForLocation(location.getId());
+
+            LocationWithAverageRating locationWithAvgRating = new LocationWithAverageRating();
+            locationWithAvgRating.setId(location.getId());
+            locationWithAvgRating.setName(location.getName());
+            locationWithAvgRating.setDescription(location.getDescription());
+            locationWithAvgRating.setCountry(location.getCountry());
+            locationWithAvgRating.setCity(location.getCity());
+            locationWithAvgRating.setAverageRating(avgRating);
+
+            locationsWithAvgRating.add(locationWithAvgRating);
+        }
+
+        return locationsWithAvgRating;
     }
 
 }

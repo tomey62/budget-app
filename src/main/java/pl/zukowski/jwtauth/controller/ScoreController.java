@@ -20,9 +20,4 @@ public class ScoreController {
 
     }
 
-    @GetMapping("/score-avg")
-    public float getAvgScore(@RequestParam Long id)
-    {
-        return scoreService.getAverageRatingForLocation(id);
-    }
 }
