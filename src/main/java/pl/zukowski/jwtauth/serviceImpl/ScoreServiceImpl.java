@@ -13,10 +13,10 @@ public class ScoreServiceImpl {
     private final ScoreRepository scoreRepository;
     private final LocationRepository locationRepository;
 
-    public Score addScore(Score score,Long id)
+    public Score addScore(float score,Long id)
     {
         Location location = locationRepository.getById(id);
-        Score score1 = new Score(null,score.getRating(),location);
+        Score score1 = new Score(null,score,location);
         return scoreRepository.save(score1);
     }
 }
