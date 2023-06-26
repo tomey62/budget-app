@@ -21,15 +21,14 @@ public class LocationServiceImpl {
  private final ScoreRepository scoreRepository;
  private final ModelMapper modelMapper;
 
- public List<LocationDto> getLocations()
- {
+ public List<LocationDto> getLocations() {
   List<Location> locations = locationRepository.findAll();
   List<LocationDto> locationRatingDTOs = new ArrayList<>();
 
   for (Location location : locations) {
    float averageRating = calculateAverageRating(location.getId());
-   LocationDto locationRatingDTO = new LocationDto(location.getName(),location.getDescription(),location.getCountry()
-           ,location.getCity(), averageRating);
+   LocationDto locationRatingDTO = new LocationDto(location.getName(), location.getDescription(), location.getCountry()
+           , location.getCity(), averageRating);
    locationRatingDTOs.add(locationRatingDTO);
   }
 
@@ -50,11 +49,53 @@ public class LocationServiceImpl {
  }
 
 
-
  public Optional<LocationDto> getLocation(Long id) {
   Location location = locationRepository.getById(id);
   float averageRating = calculateAverageRating(id);
   return Optional.of(new LocationDto(location.getName(), location.getDescription(), location.getCountry()
           , location.getCity(), averageRating));
+ }
+
+
+
+ public List<LocationDto> searchByCountry(String country) {
+  List<Location> locations = locationRepository.searchByCountry(country);
+  List<LocationDto> locationRatingDTOs = new ArrayList<>();
+
+  for (Location location : locations) {
+   float averageRating = calculateAverageRating(location.getId());
+   LocationDto locationRatingDTO = new LocationDto(location.getName(), location.getDescription(), location.getCountry()
+           , location.getCity(), averageRating);
+   locationRatingDTOs.add(locationRatingDTO);
+  }
+
+  return locationRatingDTOs;
+ }
+
+ public List<LocationDto> searchByCity(String city) {
+  List<Location> locations = locationRepository.searchByCity(city);
+  List<LocationDto> locationRatingDTOs = new ArrayList<>();
+
+  for (Location location : locations) {
+   float averageRating = calculateAverageRating(location.getId());
+   LocationDto locationRatingDTO = new LocationDto(location.getName(), location.getDescription(), location.getCountry()
+           , location.getCity(), averageRating);
+   locationRatingDTOs.add(locationRatingDTO);
+  }
+
+  return locationRatingDTOs;
+ }
+ public List<LocationDto> searchByName(String name) {
+  List<Location> locations = locationRepository.searchByName(name);
+  List<LocationDto> locationRatingDTOs = new ArrayList<>();
+
+  for (Location location : locations) {
+   float averageRating = calculateAverageRating(location.getId());
+   LocationDto locationRatingDTO = new LocationDto(location.getName(), location.getDescription(), location.getCountry()
+           , location.getCity(), averageRating);
+   locationRatingDTOs.add(locationRatingDTO);
+  }
+
+  return locationRatingDTOs;
  }
 }
