@@ -14,5 +14,5 @@ public interface ScoreRepository extends JpaRepository<Score, Long> {
     List<Score> findByLocationId(Long locationId);
 
     @Query("SELECT AVG(s.rating) FROM Score s WHERE s.location.id = :locationId")
-    Double getAverageRatingForLocation(@Param("locationId") Long locationId);
+    float getAverageRatingForLocation(@Param("locationId") Long locationId);
 }

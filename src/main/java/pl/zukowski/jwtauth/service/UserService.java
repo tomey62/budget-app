@@ -1,6 +1,7 @@
 package pl.zukowski.jwtauth.service;
 
-import pl.zukowski.jwtauth.dto.LocationWithAverageRating;
+import org.springframework.http.ResponseEntity;
+import pl.zukowski.jwtauth.dto.LocationDto;
 import pl.zukowski.jwtauth.dto.UserDto;
 import pl.zukowski.jwtauth.entity.Role;
 import pl.zukowski.jwtauth.entity.User;
@@ -19,11 +20,11 @@ public interface UserService {
     UserDto convertEntityToDto(User user);
     User resetPassword(String email);
     void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException;
-    void addLocationToFavorites(HttpServletRequest request, Long locationId) throws Exception;
+    ResponseEntity<String> addLocationToFavorites(HttpServletRequest request, Long locationId) throws Exception;
 
     User getUserFromJwt(HttpServletRequest request) throws Exception;
 
-    List<LocationWithAverageRating> getFavoriteLocations(HttpServletRequest request) throws Exception;
+    List<LocationDto> getFavoriteLocations(HttpServletRequest request) throws Exception;
 
-    void removeLocationFromFavorites(HttpServletRequest request, Long locationId) throws Exception;
+    ResponseEntity<String> removeLocationFromFavorites(HttpServletRequest request, Long locationId) throws Exception;
 }

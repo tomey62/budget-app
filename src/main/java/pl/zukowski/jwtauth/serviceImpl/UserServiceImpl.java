@@ -7,6 +7,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import pl.zukowski.jwtauth.dto.LocationDto;
 import pl.zukowski.jwtauth.dto.LocationWithAverageRating;
 import pl.zukowski.jwtauth.dto.UserDto;
 import pl.zukowski.jwtauth.entity.Location;
@@ -52,7 +54,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     public UserServiceImpl(UserRepository userRepo, RoleRepository roleRepo, ModelMapper modelMapper,
                            BCryptPasswordEncoder bCryptPasswordEncoder, JavaMailSender javaMailSender
-                            ,LocationRepository locationRepository, ScoreRepository scoreRepository) {
+            , LocationRepository locationRepository, ScoreRepository scoreRepository) {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
         this.modelMapper = modelMapper;
@@ -120,7 +122,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
-        if(authorizationHeader != null && authorizationHeader.startsWith("Bearer "))
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer "))
             try {
                 String refresh_token = authorizationHeader.substring("Bearer ".length());
                 Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
@@ -135,7 +137,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                         .withClaim("roles", user.getRoles().stream()
                                 .map(Role::getName).collect(Collectors.toList()))
                         .sign(algorithm);
-                Map<String,String> tokens = new HashMap<>();
+                Map<String, String> tokens = new HashMap<>();
                 tokens.put("access_token", access_token);
                 tokens.put("refresh_token", refresh_token);
                 response.setContentType(APPLICATION_JSON_VALUE);
@@ -174,16 +176,19 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         mimeMessageHelper.setText(text, isHtmlContent);
         javaMailSender.send(mimeMessage);
     }
+
     @Override
-    public void addLocationToFavorites(HttpServletRequest request, Long locationId) throws Exception {
+    public ResponseEntity<String> addLocationToFavorites(HttpServletRequest request, Long locationId) throws Exception {
         User user = getUserFromJwt(request);
         Location location = locationRepository.getById(locationId);
-        location.setFavourite(true);
-        if (user.getLocations().contains(location)) {
-            throw new IllegalArgumentException("Location already added to favorites.");
+        if (!location.isFavourite()) {
+            location.setFavourite(true);
+            user.getLocations().add(location);
+            userRepo.save(user);
+            return ResponseEntity.ok("Location added to favorites");
+        } else {
+            return ResponseEntity.ok("Location is already in favorites");
         }
-        user.getLocations().add(location);
-        userRepo.save(user);
     }
 
     @Override
@@ -205,43 +210,52 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
     }
+
     @Override
-    public List<LocationWithAverageRating> getFavoriteLocations(HttpServletRequest request) throws Exception {
+    public List<LocationDto> getFavoriteLocations(HttpServletRequest request) throws Exception {
         User user = getUserFromJwt(request);
         Collection<Location> favoriteLocations = user.getLocations();
-
-        List<LocationWithAverageRating> locationsWithAvgRating = new ArrayList<>();
+        List<LocationDto> locationsWithAvgRating = new ArrayList<>();
 
         for (Location location : favoriteLocations) {
-            Double avgRating = scoreRepository.getAverageRatingForLocation(location.getId());
+            byte[] photoData = null;
 
-            LocationWithAverageRating locationWithAvgRating = new LocationWithAverageRating();
-            locationWithAvgRating.setId(location.getId());
-            locationWithAvgRating.setName(location.getName());
-            locationWithAvgRating.setDescription(location.getDescription());
-            locationWithAvgRating.setCountry(location.getCountry());
-            locationWithAvgRating.setCity(location.getCity());
-            locationWithAvgRating.setAverageRating(avgRating);
+            if (location.getPhoto() != null) {
+                photoData = location.getPhoto();
+            }
+            float avgRating = scoreRepository.getAverageRatingForLocation(location.getId());
+            LocationDto locationWithAvgRating = new LocationDto(
+            location.getId(),
+                    location.getName(),
+                    location.getDescription(),
+                    location.getCountry(),
+                    location.getCity(),
+                    location.getCategory(),
+                    photoData,
+                    location.isFavourite(),
+                    avgRating
+                    );
+                    locationsWithAvgRating.add(locationWithAvgRating);
 
-            locationsWithAvgRating.add(locationWithAvgRating);
         }
-
         return locationsWithAvgRating;
     }
 
     @Override
-    public void removeLocationFromFavorites(HttpServletRequest request, Long locationId) throws Exception {
+    public ResponseEntity<String> removeLocationFromFavorites(HttpServletRequest request, Long locationId) throws Exception {
         User user = getUserFromJwt(request);
         Location location = locationRepository.findById(locationId)
                 .orElseThrow(() -> new EntityNotFoundException("Location not found with id: " + locationId));
 
         // Sprawdź, czy użytkownik ma tę lokalizację w ulubionych
-        if (!user.getLocations().contains(location)) {
-            throw new IllegalArgumentException("Location does not exist in favorites");
+        if (location.isFavourite()) {
+            location.setFavourite(false);
+            user.getLocations().remove(location);
+            userRepo.save(user);
+            return ResponseEntity.ok("Location removed from favorites");
+        } else {
+            return ResponseEntity.ok("Location is not in favorites");
         }
-        location.setFavourite(false);
-        user.getLocations().remove(location);
-        userRepo.save(user);
-    }
 
+    }
 }

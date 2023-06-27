@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.zukowski.jwtauth.dto.LocationDto;
 import pl.zukowski.jwtauth.dto.LocationWithAverageRating;
 import pl.zukowski.jwtauth.dto.UserDto;
 import pl.zukowski.jwtauth.service.UserService;
@@ -44,22 +45,22 @@ public class UserController {
     public ResponseEntity<String> addLocationToFavorites(
             HttpServletRequest request,
             @RequestParam Long locationId) throws Exception {
-        userService.addLocationToFavorites(request, locationId);
-        return ResponseEntity.ok("Location added to favorites.");
+
+        return userService.addLocationToFavorites(request, locationId);
     }
 
     @GetMapping("/favorites")
-    public ResponseEntity<List<LocationWithAverageRating>> getFavoriteLocationsWithAverageRating(
+    public ResponseEntity<List<LocationDto>> getFavoriteLocationsWithAverageRating(
             HttpServletRequest request) throws Exception {
-        List<LocationWithAverageRating> favoriteLocationsWithAvgRating = userService.getFavoriteLocations(request);
+        List<LocationDto> favoriteLocationsWithAvgRating = userService.getFavoriteLocations(request);
         return ResponseEntity.ok(favoriteLocationsWithAvgRating);
     }
 
     @DeleteMapping("/favorites")
     public ResponseEntity<String> removeLocationFromFavorites(HttpServletRequest request,
                                                               @RequestParam Long locationId) throws Exception {
-        userService.removeLocationFromFavorites(request, locationId);
-        return ResponseEntity.ok("Location removed from favorites");
+
+        return userService.removeLocationFromFavorites(request, locationId);
     }
   /*
     @PostMapping("/role/save")
