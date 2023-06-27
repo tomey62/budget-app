@@ -52,7 +52,6 @@ public class LocationServiceImpl {
    } else {
     locationDto.setFavourite(false);
    }
-
    locationDtos.add(locationDto);
   }
 
