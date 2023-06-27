@@ -16,5 +16,6 @@ public class LocationDto {
     private String city;
     private String category;
     private byte[] photo;
+    private boolean isFavourite;
     private float averageRating;
 }

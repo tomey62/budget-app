@@ -178,6 +178,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public void addLocationToFavorites(HttpServletRequest request, Long locationId) throws Exception {
         User user = getUserFromJwt(request);
         Location location = locationRepository.getById(locationId);
+        location.setFavourite(true);
         if (user.getLocations().contains(location)) {
             throw new IllegalArgumentException("Location already added to favorites.");
         }
@@ -238,7 +239,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (!user.getLocations().contains(location)) {
             throw new IllegalArgumentException("Location does not exist in favorites");
         }
-
+        location.setFavourite(false);
         user.getLocations().remove(location);
         userRepo.save(user);
     }

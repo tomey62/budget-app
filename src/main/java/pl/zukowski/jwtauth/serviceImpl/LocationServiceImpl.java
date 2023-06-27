@@ -43,6 +43,7 @@ public class LocationServiceImpl {
            location.getCity(),
            location.getCategory(),
            photoData,
+           location.isFavourite(),
            averageRating
    );
 
@@ -74,7 +75,7 @@ public class LocationServiceImpl {
    photoData = location.getPhoto();
   }
   return Optional.of(new LocationDto(location.getId(),location.getName(), location.getDescription(), location.getCountry()
-          , location.getCity(), location.getCategory(), photoData,averageRating));
+          , location.getCity(), location.getCategory(), photoData, location.isFavourite(), averageRating));
  }
 
 
@@ -100,6 +101,7 @@ public class LocationServiceImpl {
            location.getCity(),
            location.getCategory(),
            photoData,
+           location.isFavourite(),
            averageRating
    );
 
@@ -130,6 +132,7 @@ public class LocationServiceImpl {
            location.getCity(),
            location.getCategory(),
            photoData,
+           location.isFavourite(),
            averageRating
    );
 
@@ -148,7 +151,7 @@ public class LocationServiceImpl {
    }
    float averageRating = calculateAverageRating(location.getId());
    LocationDto locationRatingDTO = new LocationDto(location.getId(),location.getName(), location.getDescription(), location.getCountry()
-           , location.getCity(), location.getCategory(), photoData,averageRating);
+           , location.getCity(), location.getCategory(), photoData,location.isFavourite(),averageRating);
    locationRatingDTOs.add(locationRatingDTO);
   }
 

@@ -22,6 +22,7 @@ public class Location {
     private String country;
     private String city;
     private String category;
+    private boolean isFavourite = false;
     @Lob
     private byte[] photo;
     @OneToMany(mappedBy="location", cascade = CascadeType.REMOVE)
