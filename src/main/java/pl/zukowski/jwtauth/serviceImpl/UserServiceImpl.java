@@ -181,14 +181,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public ResponseEntity<String> addLocationToFavorites(HttpServletRequest request, Long locationId) throws Exception {
         User user = getUserFromJwt(request);
         Location location = locationRepository.getById(locationId);
-        if (!location.isFavourite()) {
-            location.setFavourite(true);
+
             user.getLocations().add(location);
             userRepo.save(user);
             return ResponseEntity.ok("Location added to favorites");
-        } else {
-            return ResponseEntity.ok("Location is already in favorites");
-        }
+
     }
 
     @Override
@@ -232,7 +229,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                     location.getCity(),
                     location.getCategory(),
                     photoData,
-                    location.isFavourite(),
+                    false,
                     avgRating
                     );
                     locationsWithAvgRating.add(locationWithAvgRating);
@@ -248,14 +245,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .orElseThrow(() -> new EntityNotFoundException("Location not found with id: " + locationId));
 
         // Sprawdź, czy użytkownik ma tę lokalizację w ulubionych
-        if (location.isFavourite()) {
-            location.setFavourite(false);
+
             user.getLocations().remove(location);
             userRepo.save(user);
             return ResponseEntity.ok("Location removed from favorites");
-        } else {
-            return ResponseEntity.ok("Location is not in favorites");
-        }
 
     }
 }
