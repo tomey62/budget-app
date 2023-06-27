@@ -21,6 +21,9 @@ public class Location {
     private String description;
     private String country;
     private String city;
+    private String category;
+    @Lob
+    private byte[] photo;
     @OneToMany(mappedBy="location", cascade = CascadeType.REMOVE)
     private Collection<Score> scores = new ArrayList<>();
 

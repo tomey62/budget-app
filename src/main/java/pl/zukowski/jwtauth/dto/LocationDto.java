@@ -14,5 +14,7 @@ public class LocationDto {
     private String description;
     private String country;
     private String city;
+    private String category;
+    private String photo;
     private float averageRating;
 }
