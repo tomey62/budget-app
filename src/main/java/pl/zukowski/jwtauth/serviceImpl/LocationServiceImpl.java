@@ -25,10 +25,10 @@ public class LocationServiceImpl {
  public List<LocationDto> getLocations() {
   List<Location> locations = locationRepository.findAll();
   List<LocationDto> locationRatingDTOs = new ArrayList<>();
-  String photoData = null;
+  byte[] photoData = null;
   for (Location location : locations) {
    if (location.getPhoto() != null){
-    photoData = Base64.getEncoder().encodeToString(location.getPhoto());
+    photoData =location.getPhoto();
    }
    float averageRating = calculateAverageRating(location.getId());
    LocationDto locationRatingDTO = new LocationDto(location.getId(),location.getName(), location.getDescription(), location.getCountry()
@@ -56,9 +56,9 @@ public class LocationServiceImpl {
  public Optional<LocationDto> getLocation(Long id) {
   Location location = locationRepository.getById(id);
   float averageRating = calculateAverageRating(id);
-  String photoData = null;
+  byte[] photoData = null;
   if (location.getPhoto() != null){
-   photoData = Base64.getEncoder().encodeToString(location.getPhoto());
+   photoData = location.getPhoto();
   }
   return Optional.of(new LocationDto(location.getId(),location.getName(), location.getDescription(), location.getCountry()
           , location.getCity(), location.getCategory(), photoData,averageRating));
@@ -69,10 +69,10 @@ public class LocationServiceImpl {
  public List<LocationDto> searchByCountry(String country) {
   List<Location> locations = locationRepository.searchByCountry(country);
   List<LocationDto> locationRatingDTOs = new ArrayList<>();
-  String photoData = null;
+  byte[] photoData = null;
   for (Location location : locations) {
    if (location.getPhoto() != null){
-    photoData = Base64.getEncoder().encodeToString(location.getPhoto());
+    photoData = location.getPhoto();
    }
    float averageRating = calculateAverageRating(location.getId());
    LocationDto locationRatingDTO = new LocationDto(location.getId(),location.getName(), location.getDescription(), location.getCountry()
@@ -86,10 +86,10 @@ public class LocationServiceImpl {
  public List<LocationDto> searchByCity(String city) {
   List<Location> locations = locationRepository.searchByCity(city);
   List<LocationDto> locationRatingDTOs = new ArrayList<>();
-  String photoData =null;
+  byte[] photoData = null;
   for (Location location : locations) {
    if (location.getPhoto() != null){
-    photoData = Base64.getEncoder().encodeToString(location.getPhoto());
+    photoData = location.getPhoto();
    }
    float averageRating = calculateAverageRating(location.getId());
    LocationDto locationRatingDTO = new LocationDto(location.getId(),location.getName(), location.getDescription(), location.getCountry()
@@ -102,10 +102,10 @@ public class LocationServiceImpl {
  public List<LocationDto> searchByName(String name) {
   List<Location> locations = locationRepository.searchByName(name);
   List<LocationDto> locationRatingDTOs = new ArrayList<>();
-  String photoData = null;
+  byte[] photoData = null;
   for (Location location : locations) {
    if (location.getPhoto() != null){
-    photoData = Base64.getEncoder().encodeToString(location.getPhoto());
+    photoData = location.getPhoto();
    }
    float averageRating = calculateAverageRating(location.getId());
    LocationDto locationRatingDTO = new LocationDto(location.getId(),location.getName(), location.getDescription(), location.getCountry()
