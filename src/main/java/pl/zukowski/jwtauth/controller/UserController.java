@@ -54,6 +54,13 @@ public class UserController {
         List<LocationWithAverageRating> favoriteLocationsWithAvgRating = userService.getFavoriteLocations(request);
         return ResponseEntity.ok(favoriteLocationsWithAvgRating);
     }
+
+    @DeleteMapping("/favorites")
+    public ResponseEntity<String> removeLocationFromFavorites(HttpServletRequest request,
+                                                              @RequestParam Long locationId) throws Exception {
+        userService.removeLocationFromFavorites(request, locationId);
+        return ResponseEntity.ok("Location removed from favorites");
+    }
   /*
     @PostMapping("/role/save")
     public ResponseEntity<Role> saveRole(@RequestBody Role role)

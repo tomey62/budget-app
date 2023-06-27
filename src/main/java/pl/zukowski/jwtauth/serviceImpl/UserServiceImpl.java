@@ -25,7 +25,7 @@ import pl.zukowski.jwtauth.repository.RoleRepository;
 import pl.zukowski.jwtauth.repository.ScoreRepository;
 import pl.zukowski.jwtauth.repository.UserRepository;
 import pl.zukowski.jwtauth.service.UserService;
-
+import javax.persistence.EntityNotFoundException;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
@@ -226,6 +226,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
         return locationsWithAvgRating;
+    }
+
+    @Override
+    public void removeLocationFromFavorites(HttpServletRequest request, Long locationId) throws Exception {
+        User user = getUserFromJwt(request);
+        Location location = locationRepository.findById(locationId)
+                .orElseThrow(() -> new EntityNotFoundException("Location not found with id: " + locationId));
+
+        // Sprawdź, czy użytkownik ma tę lokalizację w ulubionych
+        if (!user.getLocations().contains(location)) {
+            throw new IllegalArgumentException("Location does not exist in favorites");
+        }
+
+        user.getLocations().remove(location);
+        userRepo.save(user);
     }
 
 }

@@ -24,4 +24,6 @@ public interface UserService {
     User getUserFromJwt(HttpServletRequest request) throws Exception;
 
     List<LocationWithAverageRating> getFavoriteLocations(HttpServletRequest request) throws Exception;
+
+    void removeLocationFromFavorites(HttpServletRequest request, Long locationId) throws Exception;
 }
