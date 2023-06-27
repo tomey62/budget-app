@@ -25,14 +25,27 @@ public class LocationServiceImpl {
  public List<LocationDto> getLocations() {
   List<Location> locations = locationRepository.findAll();
   List<LocationDto> locationRatingDTOs = new ArrayList<>();
-  byte[] photoData = null;
+
   for (Location location : locations) {
-   if (location.getPhoto() != null){
-    photoData =location.getPhoto();
+   byte[] photoData = null;
+
+   if (location.getPhoto() != null) {
+    photoData = location.getPhoto();
    }
+
    float averageRating = calculateAverageRating(location.getId());
-   LocationDto locationRatingDTO = new LocationDto(location.getId(),location.getName(), location.getDescription(), location.getCountry()
-           , location.getCity(),location.getCategory(),photoData, averageRating);
+
+   LocationDto locationRatingDTO = new LocationDto(
+           location.getId(),
+           location.getName(),
+           location.getDescription(),
+           location.getCountry(),
+           location.getCity(),
+           location.getCategory(),
+           photoData,
+           averageRating
+   );
+
    locationRatingDTOs.add(locationRatingDTO);
   }
 
@@ -69,14 +82,27 @@ public class LocationServiceImpl {
  public List<LocationDto> searchByCountry(String country) {
   List<Location> locations = locationRepository.searchByCountry(country);
   List<LocationDto> locationRatingDTOs = new ArrayList<>();
-  byte[] photoData = null;
+
   for (Location location : locations) {
-   if (location.getPhoto() != null){
+   byte[] photoData = null;
+
+   if (location.getPhoto() != null) {
     photoData = location.getPhoto();
    }
+
    float averageRating = calculateAverageRating(location.getId());
-   LocationDto locationRatingDTO = new LocationDto(location.getId(),location.getName(), location.getDescription(), location.getCountry()
-           , location.getCity(), location.getCategory(), photoData,averageRating);
+
+   LocationDto locationRatingDTO = new LocationDto(
+           location.getId(),
+           location.getName(),
+           location.getDescription(),
+           location.getCountry(),
+           location.getCity(),
+           location.getCategory(),
+           photoData,
+           averageRating
+   );
+
    locationRatingDTOs.add(locationRatingDTO);
   }
 
@@ -86,14 +112,27 @@ public class LocationServiceImpl {
  public List<LocationDto> searchByCity(String city) {
   List<Location> locations = locationRepository.searchByCity(city);
   List<LocationDto> locationRatingDTOs = new ArrayList<>();
-  byte[] photoData = null;
+
   for (Location location : locations) {
-   if (location.getPhoto() != null){
+   byte[] photoData = null;
+
+   if (location.getPhoto() != null) {
     photoData = location.getPhoto();
    }
+
    float averageRating = calculateAverageRating(location.getId());
-   LocationDto locationRatingDTO = new LocationDto(location.getId(),location.getName(), location.getDescription(), location.getCountry()
-           , location.getCity(), location.getCategory(),photoData,averageRating);
+
+   LocationDto locationRatingDTO = new LocationDto(
+           location.getId(),
+           location.getName(),
+           location.getDescription(),
+           location.getCountry(),
+           location.getCity(),
+           location.getCategory(),
+           photoData,
+           averageRating
+   );
+
    locationRatingDTOs.add(locationRatingDTO);
   }
 
