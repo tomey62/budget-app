@@ -46,6 +46,7 @@ public class LocationServiceImpl {
    locationDto.setCity(location.getCity());
    locationDto.setCategory(location.getCategory());
    locationDto.setPhoto(location.getPhoto());
+   locationDto.setAverageRating(calculateAverageRating(location.getId()));
    // Sprawdzenie, czy lokalizacja jest ulubiona
    if (user != null && user.getLocations().contains(location)) {
     locationDto.setFavourite(true);
